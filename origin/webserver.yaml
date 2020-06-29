@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: webserver
+  name: webserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: webserver
+  template:
+    metadata:
+      annotations:
+        secrets.k8s.aws/sidecarInjectorWebhook: enabled
+        secrets.k8s.aws/secret-arn: REPLACE
+      labels:
+        run: webserver
+    spec:
+      serviceAccountName: ws
+      containers:
+      - image: busybox:1.28
+        name: webserver
+        command: ['sh', '-c', 'echo $(cat /tmp/secret) && sleep 3600']
