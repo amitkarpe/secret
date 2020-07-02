@@ -71,9 +71,6 @@ echo "creating role - $role_name"; aws iam create-role --role-name ${role_name} 
 echo ""
 
 
-sed -e "s/REPLACE/${SECRET_ARN}/g" origin/webserver.yaml | tee output/webserver.yaml
-sed -e "s/REPLACE/${SECRET_ARN}/g" origin/hello.yaml | tee output/hello.yaml
-
 echo "attaching role - $role_name to policy - $policy_name";
 aws iam attach-role-policy --role-name ${role_name} --policy-arn=arn:aws:iam::${AWS_ACCOUNT_ID}:policy/${policy_name}
 echo ""
@@ -82,6 +79,9 @@ echo ""
 echo "Annotate serviceaccount"; kubectl get sa -n ${ns} ${service_account}  -o yaml | grep annotations -A 1;
 echo "kubectl annotate serviceaccount -n ${ns} ${service_account} eks.amazonaws.com/role-arn=arn:aws:iam::${AWS_ACCOUNT_ID}:role/${policy_name} --overwrite";
 kubectl annotate serviceaccount -n ${ns} ${service_account} eks.amazonaws.com/role-arn=arn:aws:iam::${AWS_ACCOUNT_ID}:role/${role_name} --overwrite; echo "";
+
+sed -e "s/REPLACE/${SECRET_ARN}/g" src/webserver.yaml | tee output/webserver.yaml
+sed -e "s/REPLACE/${SECRET_ARN}/g" src/hello.yaml | tee output/hello.yaml
 
 kubectl delete deploy webserver
 kubectl delete pod myapp

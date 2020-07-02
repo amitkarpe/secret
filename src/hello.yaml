@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello
+  labels:
+    app: hello
+  annotations: 
+    secrets.k8s.aws/sidecarInjectorWebhook: enabled
+    secrets.k8s.aws/secret-arn: ${SECRET_ARN}
+#    secrets.k8s.aws/secret-arn: ${SECRET_ARN}
+spec:
+#  serviceAccountName: ws
+  volumes:
+    - name: secret-vol
+      emptyDir:
+        medium: Memory
+  containers:
+  - name: hello-container
+    image: busybox:1.28
+    command: ['sh', '-c', 'echo $(cat /tmp/secret) && sleep 3600']
+    volumeMounts:
+      - name: secret-vol
+        mountPath: /tmp
+  initContainers:
+  - name: aws-secrets-manager
+    image: amazon/aws-secrets-manager-secret-sidecar:v0.1.1
+    env:
+      - name: SECRET_ARN
+        valueFrom:
+          fieldRef: 
+            fieldPath: metadata.annotations['secrets.k8s.aws/secret-arn']
+    volumeMounts:
+      - name: secret-vol
+        mountPath: /tmp

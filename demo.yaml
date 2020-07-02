@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: demo
+  name: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: demo
+  template:
+    metadata:
+      annotations:
+        secrets.k8s.aws/sidecarInjectorWebhook: enabled
+        secrets.k8s.aws/secret-arn: arn:aws:secretsmanager:ap-southeast-1:850218340553:secret:test_secretB-wFblqy
+      labels:
+        run: demo
+    spec:
+      serviceAccountName: default
+      containers:
+      - image: busybox:1.28
+        name: demo
+        command: ['sh', '-c', 'echo $(cat /tmp/secret) && sleep 3600']
