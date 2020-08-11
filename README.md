@@ -18,13 +18,13 @@ kubectl get mutatingwebhookconfiguration
 Without using JSON file
 
 ```
-aws secretsmanager create-secret --name $${secret} --secret-string abcdefgh --region ap-southeast-1 --description "Test k8s secret"
+aws secretsmanager create-secret --name ${secret} --secret-string abcdefgh --region ap-southeast-1 --description "Test k8s secret"
 ```
 
 Or with using JSON file
 
 ```
-aws secretsmanager create-secret --name $${secret} --region ap-southeast-1 --secret-string file://src/mycreds.json --description "Test k8s secret" --tags '[{"Key":"app","Value":"api"},{"Key":"env","Value":"ci"}]'
+aws secretsmanager create-secret --name ${secret} --region ap-southeast-1 --secret-string file://src/mycreds.json --description "Test k8s secret" --tags '[{"Key":"app","Value":"api"},{"Key":"env","Value":"ci"}]'
 ```
 
 ### Create an AWS role to access secrets in AWS Secrets Manager
